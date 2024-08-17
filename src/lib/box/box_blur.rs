@@ -769,6 +769,7 @@ pub fn box_blur_f32(
 ///
 /// # Panics
 /// Panic is stride/width/height/channel configuration do not match provided
+#[cfg(feature = "colorutils-rs")]
 pub fn box_blur_in_linear(
     src: &[u8],
     src_stride: u32,
@@ -1110,6 +1111,7 @@ pub fn tent_blur_f32(
 ///
 /// # Panics
 /// Panic is stride/width/height/channel configuration do not match provided
+#[cfg(feature = "colorutils-rs")]
 pub fn tent_blur_in_linear(
     src: &[u8],
     src_stride: u32,
