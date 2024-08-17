@@ -25,10 +25,15 @@
 // OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#[cfg(target_arch = "aarch64")]
 use std::arch::aarch64::*;
+
+#[cfg(target_arch = "arm")]
+use std::arch::arm::*;
 
 use half::f16;
 
+#[cfg(target_arch = "aarch64")]
 use crate::neon::{load_f32_f16, store_f32_f16};
 use crate::reflect_index;
 use crate::unsafe_slice::UnsafeSlice;

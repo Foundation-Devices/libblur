@@ -26,11 +26,23 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 use crate::neon::f16_utils::{
-    xreinterpret_f16_u16, xreinterpret_u16_f16, xvcvt_f16_f32, xvcvt_f32_f16, xvld_f16, xvst_f16,
+    xreinterpret_f16_u16, xreinterpret_u16_f16, xvld_f16, xvst_f16,
 };
+
+#[cfg(target_arch = "aarch64")]
+use crate::neon::f16_utils::{
+    xvcvt_f16_f32, xvcvt_f32_f16
+};
+
+#[cfg(feature = "colorutils-rs")]
 use erydanos::vmulq_s64;
 use half::f16;
+
+#[cfg(target_arch = "aarch64")]
 use std::arch::aarch64::*;
+
+#[cfg(target_arch = "arm")]
+use std::arch::arm::*;
 
 #[inline(always)]
 pub(crate) unsafe fn load_u8_s32_fast<const CHANNELS_COUNT: usize>(ptr: *const u8) -> int32x4_t {
@@ -200,13 +212,13 @@ pub(crate) unsafe fn vdupq_n_s64x2(v: i64) -> int64x2x2_t {
 #[inline(always)]
 pub(crate) unsafe fn vmulq_u32_f32(a: uint32x4_t, b: float32x4_t) -> uint32x4_t {
     let cvt = vcvtq_f32_u32(a);
-    vcvtaq_u32_f32(vmulq_f32(cvt, b))
+    vcvtq_u32_f32(vmulq_f32(cvt, b))
 }
 
 #[inline(always)]
 pub(crate) unsafe fn vmulq_s32_f32(a: int32x4_t, b: float32x4_t) -> int32x4_t {
     let cvt = vcvtq_f32_s32(a);
-    vcvtaq_s32_f32(vmulq_f32(cvt, b))
+    vcvtq_s32_f32(vmulq_f32(cvt, b))
 }
 
 #[inline(always)]
@@ -303,6 +315,7 @@ pub(crate) struct Float32x5T(
 );
 
 #[inline(always)]
+#[cfg(target_arch = "aarch64")]
 pub(crate) unsafe fn load_f32_f16<const CHANNELS_COUNT: usize>(ptr: *const f16) -> float32x4_t {
     if CHANNELS_COUNT == 4 {
         let cvt = xvld_f16(ptr);
@@ -337,6 +350,7 @@ pub(crate) unsafe fn load_f32_f16<const CHANNELS_COUNT: usize>(ptr: *const f16) 
     return xvcvt_f32_f16(cvt);
 }
 
+#[cfg(target_arch = "aarch64")]
 #[inline(always)]
 pub(crate) unsafe fn store_f32_f16<const CHANNELS_COUNT: usize>(
     dst_ptr: *mut f16,
@@ -389,4 +403,69 @@ pub(crate) unsafe fn store_u8x8_m4<const CHANNELS_COUNT: usize>(
         let bits = pixel.to_le_bytes();
         dst_ptr.write_unaligned(bits[0]);
     }
+}
+
+#[cfg(not(feature = "colorutils-rs"))]
+#[inline(always)]
+pub unsafe fn vmulq_s64(ab: int64x2_t, cd: int64x2_t) -> int64x2_t {
+    vreinterpretq_s64_u64(vmulq_u64(
+        vreinterpretq_u64_s64(ab),
+        vreinterpretq_u64_s64(cd),
+    ))
+}
+
+#[cfg(not(feature = "colorutils-rs"))]
+#[inline(always)]
+/// Multiplies u64 together and takes low part, do not care about overflowing
+pub unsafe fn vmulq_u64(ab: uint64x2_t, cd: uint64x2_t) -> uint64x2_t {
+    /* ac = (ab & 0xFFFFFFFF) * (cd & 0xFFFFFFFF); */
+    let ab_low = vmovn_u64(ab);
+    let cd_low = vmovn_u64(cd);
+    let ac = vmull_u32(ab_low, cd_low);
+
+    /* b = ab >> 32; */
+    let b = vshrq_n_u64::<32>(ab);
+
+    /* bc = b * (cd & 0xFFFFFFFF); */
+    let bc = vmull_u32(vmovn_u64(b), vmovn_u64(cd));
+
+    /* d = cd >> 32; */
+    let d = vshrq_n_u64::<32>(cd);
+
+    /* ad = (ab & 0xFFFFFFFF) * d; */
+    let ad = vmull_u32(vmovn_u64(ab), vmovn_u64(d));
+
+    /* high = bc + ad; */
+    let mut high = vaddq_u64(bc, ad);
+
+    /* high <<= 32; */
+    high = vshlq_n_u64::<32>(high);
+
+    /* return ac + high; */
+    return vaddq_u64(high, ac);
+}
+
+extern "platform-intrinsic" {
+    pub fn simd_extract<T, U>(x: T, idx: u32) -> U;
+}
+
+#[allow(unused)]
+macro_rules! simd_extract {
+    ($x:expr, $idx:expr $(,)?) => {{
+        simd_extract($x, const { $idx })
+    }};
+    ($x:expr, $idx:expr, $ty:ty $(,)?) => {{
+        simd_extract::<_, $ty>($x, const { $idx })
+    }};
+}
+
+/// Floating-point add pairwise
+///
+/// [Arm's documentation](https://developer.arm.com/architectures/instruction-sets/intrinsics/vpadds_f32)
+#[inline]
+#[cfg(all(target_arch = "arm", target_feature = "neon"))]
+pub unsafe fn vpadds_f32(a: float32x2_t) -> f32 {
+    let a1: f32 = simd_extract!(a, 0);
+    let a2: f32 = simd_extract!(a, 1);
+    a1 + a2
 }

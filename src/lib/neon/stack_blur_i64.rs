@@ -28,15 +28,21 @@
 use crate::mul_table::{MUL_TABLE_STACK_BLUR, SHR_TABLE_STACK_BLUR};
 use crate::neon::{
     load_u8_s64x2_fast, store_u8_s32, vaddq_s64x2, vdupq_n_s64x2, vmulq_n_s64x2, vsubq_s64x2,
+    vmulq_u64, vmulq_s64,
 };
 use crate::stack_blur::StackBlurPass;
 use crate::unsafe_slice::UnsafeSlice;
 
 #[cfg(feature = "colorutils-rs")]
 use erydanos::vmulq_s64;
+
+#[cfg(target_arch = "aarch64")]
 use std::arch::aarch64::*;
 
-pub fn stack_blur_pass_neon_i64<const COMPONENTS: usize>(
+#[cfg(target_arch = "arm")]
+use std::arch::arm::*;
+
+pub(crate) fn stack_blur_pass_neon_i64<const COMPONENTS: usize>(
     pixels: &UnsafeSlice<u8>,
     stride: u32,
     width: u32,

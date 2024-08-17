@@ -29,7 +29,12 @@ use crate::mul_table::{MUL_TABLE_STACK_BLUR, SHR_TABLE_STACK_BLUR};
 use crate::neon::{load_u8_s32_fast, store_u8_s32};
 use crate::stack_blur::StackBlurPass;
 use crate::unsafe_slice::UnsafeSlice;
+
+#[cfg(target_arch = "aarch64")]
 use std::arch::aarch64::*;
+
+#[cfg(target_arch = "arm")]
+use std::arch::arm::*;
 
 pub fn stack_blur_pass_neon_i32<const COMPONENTS: usize>(
     pixels: &UnsafeSlice<u8>,

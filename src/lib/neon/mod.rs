@@ -27,31 +27,45 @@
 
 mod f16_utils;
 mod fast_gaussian;
+#[cfg(target_arch = "aarch64")]
 mod fast_gaussian_f16;
+#[cfg(target_arch = "aarch64")]
 mod fast_gaussian_f32;
 mod fast_gaussian_next;
+#[cfg(target_arch = "aarch64")]
 mod fast_gaussian_next_f16;
+#[cfg(target_arch = "aarch64")]
 mod fast_gaussian_next_f32;
+#[cfg(target_arch = "aarch64")]
 mod stack_blur_f16;
+#[cfg(target_arch = "aarch64")]
 mod stack_blur_f32;
 mod stack_blur_i32;
 mod stack_blur_i64;
 mod utils;
 
 pub use fast_gaussian::*;
+#[cfg(target_arch = "aarch64")]
 pub use fast_gaussian_f16::{
     fast_gaussian_horizontal_pass_neon_f16, fast_gaussian_vertical_pass_neon_f16,
 };
+#[cfg(target_arch = "aarch64")]
 pub use fast_gaussian_f32::fast_gaussian_horizontal_pass_neon_f32;
+#[cfg(target_arch = "aarch64")]
 pub use fast_gaussian_f32::fast_gaussian_vertical_pass_neon_f32;
 pub use fast_gaussian_next::*;
+#[cfg(target_arch = "aarch64")]
 pub use fast_gaussian_next_f16::{
     fast_gaussian_next_horizontal_pass_neon_f16, fast_gaussian_next_vertical_pass_neon_f16,
 };
+#[cfg(target_arch = "aarch64")]
 pub use fast_gaussian_next_f32::fast_gaussian_next_horizontal_pass_neon_f32;
+#[cfg(target_arch = "aarch64")]
 pub use fast_gaussian_next_f32::fast_gaussian_next_vertical_pass_neon_f32;
+#[cfg(target_arch = "aarch64")]
 pub use stack_blur_f16::stack_blur_pass_neon_f16;
+#[cfg(target_arch = "aarch64")]
 pub use stack_blur_f32::stack_blur_pass_neon_f32;
 pub use stack_blur_i32::*;
-pub use stack_blur_i64::stack_blur_pass_neon_i64;
+pub(crate) use stack_blur_i64::stack_blur_pass_neon_i64;
 pub use utils::*;

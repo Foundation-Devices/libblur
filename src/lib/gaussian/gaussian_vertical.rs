@@ -31,7 +31,7 @@ use crate::unsafe_slice::UnsafeSlice;
 use crate::{clamp_edge, reflect_101, reflect_index, EdgeMode};
 use num_traits::{AsPrimitive, FromPrimitive};
 
-pub fn gaussian_blur_vertical_pass_c_impl<
+pub(crate) fn gaussian_blur_vertical_pass_c_impl<
     T: FromPrimitive + Default + Send + Sync + Copy + 'static + AsPrimitive<f32>,
     const CHANNEL_CONFIGURATION: usize,
     const EDGE_MODE: usize,
@@ -136,7 +136,7 @@ pub fn gaussian_blur_vertical_pass_c_impl<
 }
 
 #[inline]
-pub fn gaussian_vertical_row<
+pub(crate) fn gaussian_vertical_row<
     T: FromPrimitive + Default + Send + Sync + Copy + 'static + AsPrimitive<f32>,
     const ROW_SIZE: usize,
     const EDGE_MODE: usize,
@@ -179,7 +179,7 @@ pub fn gaussian_vertical_row<
     }
 }
 
-pub fn gaussian_blur_vertical_pass_clip_edge_impl<
+pub(crate) fn gaussian_blur_vertical_pass_clip_edge_impl<
     T: FromPrimitive + Default + Send + Sync + Copy + 'static + AsPrimitive<f32>,
     const CHANNEL_CONFIGURATION: usize,
 >(
@@ -237,7 +237,7 @@ pub fn gaussian_blur_vertical_pass_clip_edge_impl<
 }
 
 #[inline]
-pub fn gaussian_vertical_row_clip_edge<
+pub(crate) fn gaussian_vertical_row_clip_edge<
     T: FromPrimitive + Default + Send + Sync + Copy + 'static + AsPrimitive<f32>,
     const ROW_SIZE: usize,
 >(

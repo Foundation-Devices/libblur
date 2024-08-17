@@ -27,7 +27,12 @@
 
 use crate::neon::{load_u8_s32_fast, store_u8x8_m4, vmulq_s32_f32};
 use crate::{clamp_edge, reflect_101, reflect_index, EdgeMode};
+
+#[cfg(target_arch = "aarch64")]
 use std::arch::aarch64::*;
+
+#[cfg(target_arch = "arm")]
+use std::arch::arm::*;
 
 use crate::unsafe_slice::UnsafeSlice;
 
@@ -112,7 +117,7 @@ pub fn fast_gaussian_horizontal_pass_neon_u8<
     }
 }
 
-pub(crate) fn fast_gaussian_vertical_pass_neon_u8<
+pub fn fast_gaussian_vertical_pass_neon_u8<
     T,
     const CHANNELS_COUNT: usize,
     const EDGE_MODE: usize,

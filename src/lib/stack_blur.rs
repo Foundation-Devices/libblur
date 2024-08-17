@@ -26,7 +26,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 use crate::mul_table::{MUL_TABLE_STACK_BLUR, SHR_TABLE_STACK_BLUR};
-#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
+#[cfg(all(any(target_arch = "aarch64", target_arch = "arm"), target_feature = "neon"))]
 use crate::neon::{stack_blur_pass_neon_i32, stack_blur_pass_neon_i64};
 #[cfg(all(
     any(target_arch = "x86_64", target_arch = "x86"),
@@ -63,7 +63,7 @@ where
 }
 
 #[derive(Copy, Clone, Ord, PartialOrd, Eq, PartialEq)]
-pub(crate) enum StackBlurPass {
+pub enum StackBlurPass {
     HORIZONTAL,
     VERTICAL,
 }
@@ -779,7 +779,7 @@ fn stack_blur_worker_horizontal(
                 stack_blur_pass::<u8, i32, i64, 4>
             };
             if radius < BASE_RADIUS_I64_CUTOFF {
-                #[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
+                #[cfg(all(any(target_arch = "aarch64", target_arch = "arm"), target_feature = "neon"))]
                 {
                     _dispatcher = stack_blur_pass_neon_i32::<4>;
                 }
@@ -791,7 +791,7 @@ fn stack_blur_worker_horizontal(
                     _dispatcher = stack_blur_pass_sse::<4>;
                 }
             } else {
-                #[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
+                #[cfg(all(any(target_arch = "aarch64", target_arch = "arm"), target_feature = "neon"))]
                 {
                     _dispatcher = stack_blur_pass_neon_i64::<4>;
                 }
@@ -870,7 +870,7 @@ fn stack_blur_worker_vertical(
                 stack_blur_pass::<u8, i32, i64, 3>
             };
             if radius < BASE_RADIUS_I64_CUTOFF {
-                #[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
+                #[cfg(all(any(target_arch = "aarch64", target_arch = "arm"), target_feature = "neon"))]
                 {
                     _dispatcher = stack_blur_pass_neon_i32::<3>;
                 }
@@ -882,7 +882,7 @@ fn stack_blur_worker_vertical(
                     _dispatcher = stack_blur_pass_sse::<3>;
                 }
             } else {
-                #[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
+                #[cfg(all(any(target_arch = "aarch64", target_arch = "arm"), target_feature = "neon"))]
                 {
                     _dispatcher = stack_blur_pass_neon_i64::<3>;
                 }
@@ -921,7 +921,7 @@ fn stack_blur_worker_vertical(
                 stack_blur_pass::<u8, i32, i64, 4>
             };
             if radius < BASE_RADIUS_I64_CUTOFF {
-                #[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
+                #[cfg(all(any(target_arch = "aarch64", target_arch = "arm"), target_feature = "neon"))]
                 {
                     _dispatcher = stack_blur_pass_neon_i32::<4>;
                 }
@@ -933,7 +933,7 @@ fn stack_blur_worker_vertical(
                     _dispatcher = stack_blur_pass_sse::<4>;
                 }
             } else {
-                #[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
+                #[cfg(all(any(target_arch = "aarch64", target_arch = "arm"), target_feature = "neon"))]
                 {
                     _dispatcher = stack_blur_pass_neon_i64::<4>;
                 }

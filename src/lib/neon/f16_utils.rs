@@ -26,7 +26,12 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
 use std::arch::aarch64::*;
+
+#[cfg(all(target_arch = "arm", target_feature = "neon"))]
+use std::arch::arm::*;
+
 use std::arch::asm;
 
 /// Provides basic support for f16
@@ -62,6 +67,7 @@ pub unsafe fn xreinterpret_f16_u16(x: uint16x4_t) -> x_float16x4_t {
 //     std::mem::transmute(x)
 // }
 
+#[cfg(target_arch = "aarch64")]
 #[inline]
 pub unsafe fn xvcvt_f32_f16(x: x_float16x4_t) -> float32x4_t {
     let src: uint16x4_t = xreinterpret_u16_f16(x);
@@ -74,6 +80,7 @@ pub unsafe fn xvcvt_f32_f16(x: x_float16x4_t) -> float32x4_t {
     dst
 }
 
+#[cfg(target_arch = "aarch64")]
 #[inline]
 pub(super) unsafe fn xvcvt_f16_f32(v: float32x4_t) -> x_float16x4_t {
     let result: uint16x4_t;

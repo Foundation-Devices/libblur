@@ -25,6 +25,14 @@
 // OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#![cfg_attr(
+    all(
+        target_arch = "arm",
+        target_feature = "neon"
+    ),
+    feature(stdsimd, simd_ffi, abi_unadjusted, link_llvm_intrinsics, inline_const, platform_intrinsics))
+]
+
 mod r#box;
 mod channels_configuration;
 mod edge_mode;
@@ -34,7 +42,7 @@ mod fast_gaussian_superior;
 mod gaussian;
 mod median_blur;
 mod mul_table;
-#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
+#[cfg(all(any(target_arch = "aarch64", target_arch = "arm"), target_feature = "neon"))]
 mod neon;
 #[cfg(all(
     any(target_arch = "x86_64", target_arch = "x86"),

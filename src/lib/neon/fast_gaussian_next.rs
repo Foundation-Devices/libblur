@@ -28,7 +28,12 @@
 use crate::neon::{load_u8_s32_fast, store_u8x8_m4};
 use crate::reflect_index;
 use crate::{clamp_edge, reflect_101, EdgeMode};
+
+#[cfg(target_arch = "aarch64")]
 use std::arch::aarch64::*;
+
+#[cfg(target_arch = "arm")]
+use std::arch::arm::*;
 
 use crate::unsafe_slice::UnsafeSlice;
 
@@ -67,7 +72,7 @@ pub fn fast_gaussian_next_vertical_pass_neon_u8<
                 let current_px = ((std::cmp::max(x, 0)) * CHANNELS_COUNT as u32) as usize;
 
                 let prepared_px_s32 =
-                    unsafe { vcvtaq_s32_f32(vmulq_f32(vcvtq_f32_s32(summs), f_weight)) };
+                    unsafe { vcvtq_s32_f32(vmulq_f32(vcvtq_f32_s32(summs), f_weight)) };
                 let prepared_u16 = unsafe { vqmovun_s32(prepared_px_s32) };
                 let prepared_u8 = unsafe { vqmovn_u16(vcombine_u16(prepared_u16, prepared_u16)) };
 
@@ -134,7 +139,7 @@ pub fn fast_gaussian_next_vertical_pass_neon_u8<
     }
 }
 
-pub(crate) fn fast_gaussian_next_horizontal_pass_neon_u8<
+pub fn fast_gaussian_next_horizontal_pass_neon_u8<
     T,
     const CHANNELS_COUNT: usize,
     const EDGE_MODE: usize,
@@ -168,7 +173,7 @@ pub(crate) fn fast_gaussian_next_horizontal_pass_neon_u8<
                 let current_px = x as usize * CHANNELS_COUNT;
 
                 let prepared_px_s32 =
-                    unsafe { vcvtaq_s32_f32(vmulq_f32(vcvtq_f32_s32(summs), f_weight)) };
+                    unsafe { vcvtq_s32_f32(vmulq_f32(vcvtq_f32_s32(summs), f_weight)) };
                 let prepared_u16 = unsafe { vqmovun_s32(prepared_px_s32) };
                 let prepared_u8 = unsafe { vqmovn_u16(vcombine_u16(prepared_u16, prepared_u16)) };
 

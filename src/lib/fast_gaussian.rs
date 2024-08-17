@@ -42,9 +42,13 @@ use crate::edge_mode::reflect_index;
 #[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
 use crate::neon::{
     fast_gaussian_horizontal_pass_neon_f16, fast_gaussian_horizontal_pass_neon_f32,
-    fast_gaussian_horizontal_pass_neon_u8, fast_gaussian_vertical_pass_neon_f16,
-    fast_gaussian_vertical_pass_neon_f32, fast_gaussian_vertical_pass_neon_u8,
+    fast_gaussian_vertical_pass_neon_f16, fast_gaussian_vertical_pass_neon_f32,
 };
+#[cfg(all(any(target_arch = "aarch64", target_arch = "arm"), target_feature = "neon"))]
+use crate::neon::{
+    fast_gaussian_horizontal_pass_neon_u8, fast_gaussian_vertical_pass_neon_u8,
+};
+
 #[cfg(all(
     any(target_arch = "x86_64", target_arch = "x86"),
     all(target_feature = "sse4.1", target_feature = "f16c")
@@ -693,7 +697,7 @@ fn fast_gaussian_impl<
                 }
             }
         }
-        #[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
+        #[cfg(all(any(target_arch = "aarch64", target_arch = "arm"), target_feature = "neon"))]
         {
             if std::any::type_name::<T>() == "u8" {
                 if BASE_RADIUS_I64_CUTOFF > radius {

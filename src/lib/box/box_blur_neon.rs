@@ -25,7 +25,11 @@
 // OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
 use std::arch::aarch64::*;
+
+#[cfg(all(target_arch = "arm", target_feature = "neon"))]
+use std::arch::arm::*;
 
 use crate::neon::{load_u8_u16, load_u8_u32_fast, store_u8_u32, vmulq_u32_f32};
 use crate::unsafe_slice::UnsafeSlice;

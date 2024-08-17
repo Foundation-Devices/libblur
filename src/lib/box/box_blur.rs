@@ -38,7 +38,7 @@ use num_traits::AsPrimitive;
 use rayon::ThreadPool;
 
 use crate::channels_configuration::FastBlurChannels;
-#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
+#[cfg(all(any(target_arch = "aarch64", target_arch = "arm"), target_feature = "neon"))]
 use crate::r#box::box_blur_neon::*;
 #[cfg(all(
     any(target_arch = "x86_64", target_arch = "x86"),
@@ -200,7 +200,7 @@ fn box_blur_horizontal_pass<
         _dispatcher_horizontal = box_blur_horizontal_pass_impl::<T, f32, CHANNEL_CONFIGURATION>;
     }
     if CHANNEL_CONFIGURATION >= 3 {
-        #[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
+        #[cfg(all(any(target_arch = "aarch64", target_arch = "arm"), target_feature = "neon"))]
         {
             if std::any::type_name::<T>() == "u8" {
                 _dispatcher_horizontal = box_blur_horizontal_pass_neon::<T, CHANNEL_CONFIGURATION>;
@@ -421,7 +421,8 @@ fn box_blur_vertical_pass<
                 _dispatcher_vertical = box_blur_vertical_pass_sse::<T, CHANNEL_CONFIGURATION>;
             }
         }
-        #[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
+
+        #[cfg(all(any(target_arch = "aarch64", target_arch = "arm"), target_feature = "neon"))]
         {
             if std::any::type_name::<T>() == "u8" {
                 _dispatcher_vertical = box_blur_vertical_pass_neon::<T, CHANNEL_CONFIGURATION>;
