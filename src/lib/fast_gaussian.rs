@@ -605,10 +605,6 @@ fn fast_gaussian_impl<
 {
     let unsafe_image = UnsafeSlice::new(bytes);
     let thread_count = threading_policy.get_threads_count(width, height) as u32;
-    let pool = rayon::ThreadPoolBuilder::new()
-        .num_threads(thread_count as usize)
-        .build()
-        .unwrap();
     let mut _dispatcher_vertical: fn(
         bytes: &UnsafeSlice<T>,
         stride: u32,
@@ -730,6 +726,11 @@ fn fast_gaussian_impl<
         _dispatcher_vertical(&unsafe_image, stride, width, height, radius, 0, width);
         _dispatcher_horizontal(&unsafe_image, stride, width, height, radius, 0, height);
     } else {
+        let pool = rayon::ThreadPoolBuilder::new()
+            .num_threads(thread_count as usize)
+            .build()
+            .unwrap();
+
         pool.scope(|scope| {
             let segment_size = width / thread_count;
 

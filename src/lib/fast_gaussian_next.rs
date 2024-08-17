@@ -663,49 +663,71 @@ fn fast_gaussian_next_impl<
     }
 
     let thread_count = threading_policy.get_threads_count(width, height) as u32;
-    let pool = rayon::ThreadPoolBuilder::new()
-        .num_threads(thread_count as usize)
-        .build()
-        .unwrap();
+    let pool =  if thread_count == 1 { None } else {
+        Some(rayon::ThreadPoolBuilder::new()
+            .num_threads(thread_count as usize)
+            .build()
+            .unwrap())
+    };
 
     let unsafe_image = UnsafeSlice::new(bytes);
-    pool.scope(|scope| {
-        let segment_size = width / thread_count;
+    if let Some(pool) = pool.as_ref() {
+        pool.scope(|scope| {
+            let segment_size = width / thread_count;
 
-        for i in 0..thread_count {
-            let start_x = i * segment_size;
-            let mut end_x = (i + 1) * segment_size;
-            if i == thread_count - 1 {
-                end_x = width;
+            for i in 0..thread_count {
+                let start_x = i * segment_size;
+                let mut end_x = (i + 1) * segment_size;
+                if i == thread_count - 1 {
+                    end_x = width;
+                }
+                scope.spawn(move |_| {
+                    _dispatcher_vertical(&unsafe_image, stride, width, height, radius, start_x, end_x);
+                });
             }
-            scope.spawn(move |_| {
-                _dispatcher_vertical(&unsafe_image, stride, width, height, radius, start_x, end_x);
-            });
-        }
-    });
+        });
+    } else {
+        let start_x = 0;
+        let end_x = width;
+        _dispatcher_vertical(&unsafe_image, stride, width, height, radius, start_x, end_x);
+    }
 
-    pool.scope(|scope| {
-        let segment_size = height / thread_count;
+    if let Some(pool) = pool.as_ref() {
+        pool.scope(|scope| {
+            let segment_size = height / thread_count;
 
-        for i in 0..thread_count {
-            let start_y = i * segment_size;
-            let mut end_y = (i + 1) * segment_size;
-            if i == thread_count - 1 {
-                end_y = height;
+            for i in 0..thread_count {
+                let start_y = i * segment_size;
+                let mut end_y = (i + 1) * segment_size;
+                if i == thread_count - 1 {
+                    end_y = height;
+                }
+                scope.spawn(move |_| {
+                    _dispatcher_horizontal(
+                        &unsafe_image,
+                        stride,
+                        width,
+                        height,
+                        radius,
+                        start_y,
+                        end_y,
+                    );
+                });
             }
-            scope.spawn(move |_| {
-                _dispatcher_horizontal(
-                    &unsafe_image,
-                    stride,
-                    width,
-                    height,
-                    radius,
-                    start_y,
-                    end_y,
-                );
-            });
-        }
-    });
+        });
+    } else {
+        let start_y = 0;
+        let end_y = height;
+        _dispatcher_horizontal(
+            &unsafe_image,
+            stride,
+            width,
+            height,
+            radius,
+            start_y,
+            end_y,
+        );
+    }
 }
 
 /// Performs gaussian approximation on the image.
