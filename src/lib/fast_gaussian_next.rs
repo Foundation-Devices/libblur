@@ -50,8 +50,12 @@ use crate::sse::{
 use crate::to_storage::ToStorage;
 use crate::unsafe_slice::UnsafeSlice;
 use crate::{clamp_edge, reflect_101, EdgeMode, FastBlurChannels, ThreadingPolicy};
+
+#[cfg(feature = "colorutils-rs")]
 use colorutils_rs::linear_to_planar::linear_to_plane;
+#[cfg(feature = "colorutils-rs")]
 use colorutils_rs::planar_to_linear::plane_to_linear;
+#[cfg(feature = "colorutils-rs")]
 use colorutils_rs::{
     linear_to_rgb, linear_to_rgba, rgb_to_linear, rgba_to_linear, TransferFunction,
 };
@@ -884,6 +888,7 @@ pub fn fast_gaussian_next_f16(
 ///
 /// # Panics
 /// Panic is stride/width/height/channel configuration do not match provided
+#[cfg(feature = "colorutils-rs")]
 pub fn fast_gaussian_next_in_linear(
     in_place: &mut [u8],
     stride: u32,

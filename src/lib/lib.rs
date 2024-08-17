@@ -50,11 +50,14 @@ mod to_storage;
 mod unsafe_slice;
 
 pub use channels_configuration::FastBlurChannels;
+#[cfg(feature = "colorutils-rs")]
 pub use colorutils_rs::TransferFunction;
+
 pub use edge_mode::*;
 pub use fast_gaussian::fast_gaussian;
 pub use fast_gaussian::fast_gaussian_f16;
 pub use fast_gaussian::fast_gaussian_f32;
+#[cfg(feature = "colorutils-rs")]
 pub use fast_gaussian::fast_gaussian_in_linear;
 pub use fast_gaussian::fast_gaussian_plane;
 pub use fast_gaussian::fast_gaussian_plane_f32;
@@ -62,29 +65,35 @@ pub use fast_gaussian::fast_gaussian_u16;
 pub use fast_gaussian_next::fast_gaussian_next;
 pub use fast_gaussian_next::fast_gaussian_next_f16;
 pub use fast_gaussian_next::fast_gaussian_next_f32;
+#[cfg(feature = "colorutils-rs")]
 pub use fast_gaussian_next::fast_gaussian_next_in_linear;
 pub use fast_gaussian_next::fast_gaussian_next_u16;
 pub use fast_gaussian_superior::fast_gaussian_superior;
 pub use gaussian::gaussian_blur;
 pub use gaussian::gaussian_blur_f16;
 pub use gaussian::gaussian_blur_f32;
+#[cfg(feature = "colorutils-rs")]
 pub use gaussian::gaussian_blur_in_linear;
 pub use gaussian::gaussian_blur_u16;
 pub use median_blur::median_blur;
 pub use r#box::box_blur;
 pub use r#box::box_blur_f32;
+#[cfg(feature = "colorutils-rs")]
 pub use r#box::box_blur_in_linear;
 pub use r#box::box_blur_u16;
 pub use r#box::gaussian_box_blur;
 pub use r#box::gaussian_box_blur_f32;
+#[cfg(feature = "colorutils-rs")]
 pub use r#box::gaussian_box_blur_in_linear;
 pub use r#box::gaussian_box_blur_u16;
 pub use r#box::tent_blur;
 pub use r#box::tent_blur_f32;
+#[cfg(feature = "colorutils-rs")]
 pub use r#box::tent_blur_in_linear;
 pub use r#box::tent_blur_u16;
 pub use stack_blur::stack_blur;
 pub use stack_blur_f16::stack_blur_f16;
 pub use stack_blur_f32::stack_blur_f32;
+#[cfg(feature = "colorutils-rs")]
 pub use stack_blur_linear::stack_blur_in_linear;
 pub use threading_policy::ThreadingPolicy;

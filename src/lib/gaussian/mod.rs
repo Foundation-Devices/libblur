@@ -46,4 +46,6 @@ mod gaussian_linear;
 mod gaussian_vertical;
 
 pub use gaussian::*;
+
+#[cfg(feature = "colorutils-rs")]
 pub use gaussian_linear::gaussian_blur_in_linear;

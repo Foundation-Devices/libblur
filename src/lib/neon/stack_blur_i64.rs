@@ -31,6 +31,8 @@ use crate::neon::{
 };
 use crate::stack_blur::StackBlurPass;
 use crate::unsafe_slice::UnsafeSlice;
+
+#[cfg(feature = "colorutils-rs")]
 use erydanos::vmulq_s64;
 use std::arch::aarch64::*;
 

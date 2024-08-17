@@ -26,8 +26,12 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 use crate::{gaussian_blur_f32, EdgeMode, FastBlurChannels, ThreadingPolicy};
+
+#[cfg(feature = "colorutils-rs")]
 use colorutils_rs::linear_to_planar::linear_to_plane;
+#[cfg(feature = "colorutils-rs")]
 use colorutils_rs::planar_to_linear::plane_to_linear;
+#[cfg(feature = "colorutils-rs")]
 use colorutils_rs::{
     linear_to_rgb, linear_to_rgba, rgb_to_linear, rgba_to_linear, TransferFunction,
 };
@@ -54,6 +58,7 @@ use std::mem::size_of;
 ///
 /// # Panics
 /// Panic is stride/width/height/channel configuration do not match provided
+#[cfg(feature = "colorutils-rs")]
 pub fn gaussian_blur_in_linear(
     src: &[u8],
     src_stride: u32,

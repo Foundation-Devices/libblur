@@ -11,7 +11,7 @@ name = "fast-blur"
 path = "src/main.rs"
 
 [dependencies]
-colorutils-rs = "0.5.8"
+colorutils-rs = { version = "0.5.8", optional = true }
 half = "2.4.1"
 image = "0.25.1"
 libblur = {path = "src/lib"}
@@ -32,3 +32,7 @@ harness = false
 [[bench]]
 name = "fast_gaussian"
 harness = false
+
+[features]
+default = ["colorutils-rs"]
+colorutils-rs = ["dep:colorutils-rs"]

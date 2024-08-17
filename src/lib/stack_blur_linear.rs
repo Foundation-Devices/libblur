@@ -26,8 +26,12 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 use crate::{FastBlurChannels, ThreadingPolicy};
+
+#[cfg(feature = "colorutils-rs")]
 use colorutils_rs::linear_to_planar::linear_to_plane;
+#[cfg(feature = "colorutils-rs")]
 use colorutils_rs::planar_to_linear::plane_to_linear;
+#[cfg(feature = "colorutils-rs")]
 use colorutils_rs::{
     linear_to_rgb, linear_to_rgba, rgb_to_linear, rgba_to_linear, TransferFunction,
 };
@@ -52,6 +56,7 @@ use std::mem::size_of;
 ///
 /// # Complexity
 /// O(1) complexity.
+#[cfg(feature = "colorutils-rs")]
 pub fn stack_blur_in_linear(
     in_place: &mut [u8],
     stride: u32,
