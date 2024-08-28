@@ -30,7 +30,7 @@
         target_arch = "arm",
         target_feature = "neon"
     ),
-    feature(stdsimd, simd_ffi, abi_unadjusted, link_llvm_intrinsics, inline_const, platform_intrinsics))
+    feature(intrinsics, simd_ffi, abi_unadjusted, link_llvm_intrinsics, stdarch_arm_neon_intrinsics))
 ]
 
 mod r#box;

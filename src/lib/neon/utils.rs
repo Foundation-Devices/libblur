@@ -445,7 +445,7 @@ pub unsafe fn vmulq_u64(ab: uint64x2_t, cd: uint64x2_t) -> uint64x2_t {
     return vaddq_u64(high, ac);
 }
 
-extern "platform-intrinsic" {
+extern "rust-intrinsic" {
     pub fn simd_extract<T, U>(x: T, idx: u32) -> U;
 }
 
